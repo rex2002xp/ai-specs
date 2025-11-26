@@ -1,0 +1,1093 @@
+openapi: 3.0.0
+info:
+  title: LTI (Learning Technology Initiative) API
+  description: |
+    API REST para la plataforma Learning Technology Initiative, diseñada para gestionar candidatos, posiciones, entrevistas y procesos de reclutamiento.
+
+    Esta API sigue principios de Domain-Driven Design e implementa una arquitectura en capas para una gestión escalable de reclutamiento.
+
+    ## Características
+    - Gestión de candidatos con seguimiento de educación y experiencia laboral
+    - Gestión de posiciones con integración de empresa y flujo de entrevistas
+    - Seguimiento de aplicaciones a través de procesos de entrevista
+    - Capacidades de carga de archivos para currículums y documentos
+    - Soporte completo de filtrado, ordenamiento y paginación
+
+  version: 0.0.0.001
+  contact:
+    name: LTI Development Team
+  license:
+    name: ISC
+
+servers:
+  - url: http://localhost:3000
+    description: Servidor de desarrollo
+  - url: https://api.lti.dev
+    description: Servidor de producción
+
+paths:
+  /candidates:
+    get:
+      summary: Obtener todos los candidatos
+      description: Recupera una lista paginada de candidatos con capacidades opcionales de filtrado y ordenamiento
+      tags:
+        - Candidates
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Número de página para la paginación
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          description: Número de candidatos por página
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Término de búsqueda para filtrar candidatos por nombre, apellido o correo electrónico
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [firstName, lastName, email]
+            default: firstName
+          description: Campo por el cual ordenar los candidatos
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Orden de clasificación
+      responses:
+        '200':
+          description: Candidatos recuperados exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateListResponse'
+        '400':
+          description: Parámetros de solicitud inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Crear un nuevo candidato
+      description: Agregar un nuevo candidato al sistema con su información personal, educación y experiencia laboral
+      tags:
+        - Candidates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCandidateRequest'
+      responses:
+        '201':
+          description: Candidato creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCandidateResponse'
+        '400':
+          description: Error de validación o correo electrónico ya existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /candidates/{id}:
+    get:
+      summary: Obtener candidato por ID
+      description: Recupera información detallada sobre un candidato específico incluyendo sus aplicaciones, entrevistas y datos relacionados
+      tags:
+        - Candidates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del candidato
+      responses:
+        '200':
+          description: Candidato recuperado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateDetails'
+        '400':
+          description: Formato de ID inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Candidato no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Actualizar etapa de entrevista del candidato
+      description: Actualiza la etapa de entrevista actual para la aplicación de un candidato
+      tags:
+        - Candidates
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID del candidato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCandidateStageRequest'
+      responses:
+        '200':
+          description: Etapa del candidato actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCandidateStageResponse'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Aplicación no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /positions:
+    get:
+      summary: Obtener todas las posiciones
+      description: Recupera todas las posiciones visibles en el sistema
+      tags:
+        - Positions
+      responses:
+        '200':
+          description: Posiciones recuperadas exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Position'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /positions/{id}:
+    get:
+      summary: Obtener posición por ID
+      description: Recupera información detallada sobre una posición específica
+      tags:
+        - Positions
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la posición
+      responses:
+        '200':
+          description: Posición recuperada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+        '400':
+          description: Formato de ID de posición inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Posición no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Actualizar posición
+      description: |
+        Actualiza una posición existente con nueva información. Soporta actualizaciones parciales - solo los campos proporcionados en el cuerpo de la solicitud serán actualizados.
+        Los campos no proporcionados mantendrán sus valores existentes en la base de datos.
+      tags:
+        - Positions
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la posición
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePositionRequest'
+      responses:
+        '200':
+          description: Posición actualizada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePositionResponse'
+        '400':
+          description: Error de validación o datos de referencia inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Posición no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /positions/{id}/candidates:
+    get:
+      summary: Obtener candidatos por posición
+      description: Recupera todos los candidatos que han aplicado a una posición específica con su progreso de entrevista
+      tags:
+        - Positions
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la posición
+      responses:
+        '200':
+          description: Candidatos recuperados exitosamente para la posición
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PositionCandidate'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /positions/{id}/candidates/names:
+    get:
+      summary: Obtener nombres de candidatos por posición
+      description: Recupera información simplificada de candidatos (solo ID y nombre) para una posición específica
+      tags:
+        - Positions
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la posición
+      responses:
+        '200':
+          description: Nombres de candidatos recuperados exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CandidateName'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /positions/{id}/interviewflow:
+    get:
+      summary: Obtener flujo de entrevista por posición
+      description: Recupera la configuración del flujo de entrevista para una posición específica
+      tags:
+        - Positions
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID de la posición
+      responses:
+        '200':
+          description: Flujo de entrevista recuperado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterviewFlowResponse'
+        '404':
+          description: Posición no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /upload:
+    post:
+      summary: Subir archivo
+      description: Sube un archivo (PDF o DOCX) para almacenamiento de currículum o documento
+      tags:
+        - File Upload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Archivo para subir (PDF o DOCX, máximo 10MB)
+              required:
+                - file
+      responses:
+        '200':
+          description: Archivo subido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '400':
+          description: Tipo de archivo inválido o archivo demasiado grande
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error de carga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CandidateListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Candidate'
+        metadata:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+        - data
+        - metadata
+
+    Candidate:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identificador único del candidato
+        firstName:
+          type: string
+          description: Nombre del candidato
+        lastName:
+          type: string
+          description: Apellido del candidato
+        email:
+          type: string
+          format: email
+          description: Dirección de correo electrónico del candidato
+        phone:
+          type: string
+          nullable: true
+          description: Número de teléfono del candidato
+        address:
+          type: string
+          nullable: true
+          description: Dirección del candidato
+        educations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Education'
+        workExperiences:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkExperience'
+        resumes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Resume'
+        applications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Application'
+      required:
+        - firstName
+        - lastName
+        - email
+
+    CandidateDetails:
+      allOf:
+        - $ref: '#/components/schemas/Candidate'
+        - type: object
+          properties:
+            applications:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Application'
+                  - type: object
+                    properties:
+                      position:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          title:
+                            type: string
+                      interviews:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Interview'
+
+    CreateCandidateRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Nombre del candidato
+        lastName:
+          type: string
+          description: Apellido del candidato
+        email:
+          type: string
+          format: email
+          description: Dirección de correo electrónico del candidato
+        phone:
+          type: string
+          nullable: true
+          description: Número de teléfono del candidato
+        address:
+          type: string
+          nullable: true
+          description: Dirección del candidato
+        educations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateEducationRequest'
+        workExperiences:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateWorkExperienceRequest'
+        cv:
+          $ref: '#/components/schemas/CreateResumeRequest'
+      required:
+        - firstName
+        - lastName
+        - email
+
+    CreateCandidateResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del candidato creado
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+
+    UpdateCandidateStageRequest:
+      type: object
+      properties:
+        applicationId:
+          type: string
+          description: ID de la aplicación (será convertido a entero)
+        currentInterviewStep:
+          type: string
+          description: Paso de entrevista actual (será convertido a entero)
+      required:
+        - applicationId
+        - currentInterviewStep
+
+    UpdateCandidateStageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Etapa del candidato actualizada exitosamente"
+        data:
+          $ref: '#/components/schemas/Application'
+
+    Position:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Identificador único de la posición
+        companyId:
+          type: integer
+          description: ID de la empresa asociada
+        interviewFlowId:
+          type: integer
+          description: ID del flujo de entrevista asociado
+        title:
+          type: string
+          description: Título de la posición
+        description:
+          type: string
+          description: Descripción de la posición
+        status:
+          type: string
+          description: Estado de la posición
+          default: "Draft"
+        isVisible:
+          type: boolean
+          description: Si la posición es visible para los candidatos
+          default: false
+        location:
+          type: string
+          description: Ubicación de la posición
+        jobDescription:
+          type: string
+          description: Descripción detallada del trabajo
+        requirements:
+          type: string
+          nullable: true
+          description: Requisitos de la posición
+        responsibilities:
+          type: string
+          nullable: true
+          description: Responsabilidades de la posición
+        salaryMin:
+          type: number
+          nullable: true
+          description: Salario mínimo
+        salaryMax:
+          type: number
+          nullable: true
+          description: Salario máximo
+        employmentType:
+          type: string
+          nullable: true
+          description: Tipo de empleo
+        benefits:
+          type: string
+          nullable: true
+          description: Beneficios de la posición
+        companyDescription:
+          type: string
+          nullable: true
+          description: Descripción de la empresa
+        applicationDeadline:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha límite de aplicación
+        contactInfo:
+          type: string
+          nullable: true
+          description: Información de contacto
+      required:
+        - companyId
+        - interviewFlowId
+        - title
+        - description
+        - location
+        - jobDescription
+
+    UpdatePositionRequest:
+      type: object
+      properties:
+        companyId:
+          type: integer
+          minimum: 1
+          description: ID de la empresa asociada (debe ser un entero positivo)
+        interviewFlowId:
+          type: integer
+          minimum: 1
+          description: ID del flujo de entrevista asociado (debe ser un entero positivo)
+        title:
+          type: string
+          maxLength: 100
+          minLength: 1
+          description: Título de la posición (requerido, 1-100 caracteres)
+        description:
+          type: string
+          minLength: 1
+          description: Descripción de la posición (requerido, no puede estar vacío)
+        status:
+          type: string
+          enum: [Open, Contratado, Cerrado, Borrador]
+          description: Estado de la posición (debe ser uno de los valores de estado válidos)
+        isVisible:
+          type: boolean
+          description: Si la posición es visible para los candidatos
+        location:
+          type: string
+          minLength: 1
+          description: Ubicación de la posición (requerido, no puede estar vacío)
+        jobDescription:
+          type: string
+          minLength: 1
+          description: Descripción detallada del trabajo (requerido, no puede estar vacío)
+        requirements:
+          type: string
+          nullable: true
+          description: Requisitos de la posición
+        responsibilities:
+          type: string
+          nullable: true
+          description: Responsabilidades de la posición
+        salaryMin:
+          type: number
+          minimum: 0
+          nullable: true
+          description: Salario mínimo (debe ser >= 0, no puede ser mayor que salaryMax)
+        salaryMax:
+          type: number
+          minimum: 0
+          nullable: true
+          description: Salario máximo (debe ser >= 0, no puede ser menor que salaryMin)
+        employmentType:
+          type: string
+          nullable: true
+          description: Tipo de empleo
+        benefits:
+          type: string
+          nullable: true
+          description: Beneficios de la posición
+        companyDescription:
+          type: string
+          nullable: true
+          description: Descripción de la empresa
+        applicationDeadline:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha límite de aplicación (debe ser una fecha futura)
+        contactInfo:
+          type: string
+          nullable: true
+          description: Información de contacto
+
+    UpdatePositionResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Posición actualizada exitosamente"
+        data:
+          $ref: '#/components/schemas/Position'
+
+    PositionCandidate:
+      type: object
+      properties:
+        fullName:
+          type: string
+          description: Nombre completo del candidato
+        currentInterviewStep:
+          type: string
+          description: Nombre del paso de entrevista actual
+        candidateId:
+          type: integer
+          description: ID del candidato
+        applicationId:
+          type: integer
+          description: ID de la aplicación
+        averageScore:
+          type: number
+          description: Puntuación promedio de entrevista
+      required:
+        - fullName
+        - currentInterviewStep
+        - candidateId
+        - applicationId
+        - averageScore
+
+    CandidateName:
+      type: object
+      properties:
+        candidateId:
+          type: integer
+          description: ID del candidato
+        fullName:
+          type: string
+          description: Nombre completo del candidato
+      required:
+        - candidateId
+        - fullName
+
+    InterviewFlowResponse:
+      type: object
+      properties:
+        interviewFlow:
+          type: object
+          properties:
+            positionName:
+              type: string
+              description: Título de la posición
+            interviewFlow:
+              $ref: '#/components/schemas/InterviewFlow'
+
+    InterviewFlow:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del flujo de entrevista
+        description:
+          type: string
+          description: Descripción del flujo de entrevista
+        interviewSteps:
+          type: array
+          items:
+            $ref: '#/components/schemas/InterviewStep'
+
+    InterviewStep:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del paso de entrevista
+        interviewFlowId:
+          type: integer
+          description: ID del flujo de entrevista asociado
+        interviewTypeId:
+          type: integer
+          description: ID del tipo de entrevista asociado
+        name:
+          type: string
+          description: Nombre del paso de entrevista
+        orderIndex:
+          type: integer
+          description: Orden del paso en el flujo de entrevista
+
+    Education:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del registro de educación
+        candidateId:
+          type: integer
+          description: ID del candidato asociado
+        institution:
+          type: string
+          description: Nombre de la institución educativa
+        title:
+          type: string
+          description: Título del grado o certificación
+        startDate:
+          type: string
+          format: date-time
+          description: Fecha de inicio de la educación
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha de finalización de la educación
+      required:
+        - institution
+        - title
+        - startDate
+
+    CreateEducationRequest:
+      type: object
+      properties:
+        institution:
+          type: string
+          description: Nombre de la institución educativa
+        title:
+          type: string
+          description: Título del grado o certificación
+        startDate:
+          type: string
+          format: date-time
+          description: Fecha de inicio de la educación
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha de finalización de la educación
+      required:
+        - institution
+        - title
+        - startDate
+
+    WorkExperience:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del registro de experiencia laboral
+        candidateId:
+          type: integer
+          description: ID del candidato asociado
+        company:
+          type: string
+          description: Nombre de la empresa
+        position:
+          type: string
+          description: Título del puesto de trabajo
+        description:
+          type: string
+          nullable: true
+          description: Descripción del trabajo
+        startDate:
+          type: string
+          format: date-time
+          description: Fecha de inicio del empleo
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha de finalización del empleo
+      required:
+        - company
+        - position
+        - startDate
+
+    CreateWorkExperienceRequest:
+      type: object
+      properties:
+        company:
+          type: string
+          description: Nombre de la empresa
+        position:
+          type: string
+          description: Título del puesto de trabajo
+        description:
+          type: string
+          nullable: true
+          description: Descripción del trabajo
+        startDate:
+          type: string
+          format: date-time
+          description: Fecha de inicio del empleo
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: Fecha de finalización del empleo
+      required:
+        - company
+        - position
+        - startDate
+
+    Resume:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del registro de currículum
+        candidateId:
+          type: integer
+          description: ID del candidato asociado
+        filePath:
+          type: string
+          description: Ruta del archivo de currículum
+        fileType:
+          type: string
+          description: Tipo MIME del archivo de currículum
+      required:
+        - filePath
+        - fileType
+
+    CreateResumeRequest:
+      type: object
+      properties:
+        filePath:
+          type: string
+          description: Ruta del archivo de currículum
+        fileType:
+          type: string
+          description: Tipo MIME del archivo de currículum
+      required:
+        - filePath
+        - fileType
+
+    Application:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID de la aplicación
+        candidateId:
+          type: integer
+          description: ID del candidato asociado
+        positionId:
+          type: integer
+          description: ID de la posición asociada
+        applicationDate:
+          type: string
+          format: date-time
+          description: Fecha de envío de la aplicación
+        currentInterviewStep:
+          type: integer
+          description: ID del paso de entrevista actual
+        notes:
+          type: string
+          nullable: true
+          description: Notas de la aplicación
+
+    Interview:
+      type: object
+      properties:
+        interviewDate:
+          type: string
+          format: date-time
+          description: Fecha y hora de la entrevista
+        interviewStep:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Nombre del paso de entrevista
+        notes:
+          type: string
+          nullable: true
+          description: Notas de la entrevista
+        score:
+          type: number
+          nullable: true
+          description: Puntuación de la entrevista
+
+    FileUploadResponse:
+      type: object
+      properties:
+        filePath:
+          type: string
+          description: Ruta del archivo subido
+        fileType:
+          type: string
+          description: Tipo MIME del archivo subido
+      required:
+        - filePath
+        - fileType
+
+    PaginationMetadata:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Número total de registros
+        page:
+          type: integer
+          description: Número de página actual
+        limit:
+          type: integer
+          description: Registros por página
+        totalPages:
+          type: integer
+          description: Número total de páginas
+      required:
+        - total
+        - page
+        - limit
+        - totalPages
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de error
+        error:
+          type: string
+          description: Información detallada del error
+      required:
+        - message
+
+tags:
+  - name: Candidates
+    description: Operaciones relacionadas con la gestión de candidatos
+  - name: Positions
+    description: Operaciones relacionadas con la gestión de posiciones de trabajo
+  - name: File Upload
+    description: Operaciones relacionadas con la carga de archivos
