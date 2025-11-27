@@ -4,14 +4,14 @@ info:
   description: |
     API REST para la plataforma Learning Technology Initiative, diseñada para gestionar candidatos, posiciones, entrevistas y procesos de reclutamiento.
 
-    Esta API sigue principios de Domain-Driven Design e implementa una arquitectura en capas para una gestión escalable de reclutamiento.
+    Esta API, integrada en una aplicación Next.js, sigue principios de Domain-Driven Design para una gestión escalable.
 
     ## Características
-    - Gestión de candidatos con seguimiento de educación y experiencia laboral
-    - Gestión de posiciones con integración de empresa y flujo de entrevistas
-    - Seguimiento de aplicaciones a través de procesos de entrevista
-    - Capacidades de carga de archivos para currículums y documentos
-    - Soporte completo de filtrado, ordenamiento y paginación
+    - Gestión de candidatos con seguimiento de educación y experiencia laboral.
+    - Gestión de posiciones con integración de empresa y flujo de entrevistas.
+    - Seguimiento de aplicaciones a través de procesos de entrevista.
+    - Capacidades de carga de archivos para currículums y documentos.
+    - Soporte completo de filtrado, ordenamiento y paginación.
 
   version: 0.0.0.001
   contact:
@@ -20,8 +20,8 @@ info:
     name: ISC
 
 servers:
-  - url: http://localhost:3000
-    description: Servidor de desarrollo
+  - url: http://localhost:3000/api
+    description: Servidor de desarrollo Next.js
   - url: https://api.lti.dev
     description: Servidor de producción
 
@@ -29,7 +29,7 @@ paths:
   /candidates:
     get:
       summary: Obtener todos los candidatos
-      description: Recupera una lista paginada de candidatos con capacidades opcionales de filtrado y ordenamiento
+      description: "Recupera una lista paginada de candidatos con capacidades opcionales de filtrado y ordenamiento."
       tags:
         - Candidates
       parameters:
@@ -39,7 +39,7 @@ paths:
             type: integer
             minimum: 1
             default: 1
-          description: Número de página para la paginación
+          description: "Número de página para la paginación."
         - in: query
           name: limit
           schema:
@@ -47,41 +47,41 @@ paths:
             minimum: 1
             maximum: 100
             default: 10
-          description: Número de candidatos por página
+          description: "Número de candidatos por página."
         - in: query
           name: search
           schema:
             type: string
-          description: Término de búsqueda para filtrar candidatos por nombre, apellido o correo electrónico
+          description: "Término de búsqueda para filtrar candidatos por nombre, apellido o correo electrónico."
         - in: query
           name: sort
           schema:
             type: string
             enum: [firstName, lastName, email]
             default: firstName
-          description: Campo por el cual ordenar los candidatos
+          description: "Campo por el cual ordenar los candidatos."
         - in: query
           name: order
           schema:
             type: string
             enum: [asc, desc]
             default: asc
-          description: Orden de clasificación
+          description: "Orden de clasificación."
       responses:
         '200':
-          description: Candidatos recuperados exitosamente
+          description: "Candidatos recuperados exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CandidateListResponse'
         '400':
-          description: Parámetros de solicitud inválidos
+          description: "Parámetros de solicitud inválidos."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -89,7 +89,7 @@ paths:
 
     post:
       summary: Crear un nuevo candidato
-      description: Agregar un nuevo candidato al sistema con su información personal, educación y experiencia laboral
+      description: "Agrega un nuevo candidato al sistema con su información personal, educación y experiencia laboral."
       tags:
         - Candidates
       requestBody:
@@ -100,19 +100,19 @@ paths:
               $ref: '#/components/schemas/CreateCandidateRequest'
       responses:
         '201':
-          description: Candidato creado exitosamente
+          description: "Candidato creado exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateCandidateResponse'
         '400':
-          description: Error de validación o correo electrónico ya existe
+          description: "Error de validación o correo electrónico ya existe."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -121,7 +121,7 @@ paths:
   /candidates/{id}:
     get:
       summary: Obtener candidato por ID
-      description: Recupera información detallada sobre un candidato específico incluyendo sus aplicaciones, entrevistas y datos relacionados
+      description: "Recupera información detallada sobre un candidato específico, incluyendo sus aplicaciones, entrevistas y datos relacionados."
       tags:
         - Candidates
       parameters:
@@ -130,28 +130,28 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID del candidato
+          description: "ID del candidato."
       responses:
         '200':
-          description: Candidato recuperado exitosamente
+          description: "Candidato recuperado exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CandidateDetails'
         '400':
-          description: Formato de ID inválido
+          description: "Formato de ID inválido."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Candidato no encontrado
+          description: "Candidato no encontrado."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -159,7 +159,7 @@ paths:
 
     put:
       summary: Actualizar etapa de entrevista del candidato
-      description: Actualiza la etapa de entrevista actual para la aplicación de un candidato
+      description: "Actualiza la etapa de entrevista actual para la aplicación de un candidato."
       tags:
         - Candidates
       parameters:
@@ -168,7 +168,7 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID del candidato
+          description: "ID del candidato."
       requestBody:
         required: true
         content:
@@ -177,25 +177,25 @@ paths:
               $ref: '#/components/schemas/UpdateCandidateStageRequest'
       responses:
         '200':
-          description: Etapa del candidato actualizada exitosamente
+          description: "Etapa del candidato actualizada exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateCandidateStageResponse'
         '400':
-          description: Error de validación
+          description: "Error de validación."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Aplicación no encontrada
+          description: "Aplicación no encontrada."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -204,12 +204,12 @@ paths:
   /positions:
     get:
       summary: Obtener todas las posiciones
-      description: Recupera todas las posiciones visibles en el sistema
+      description: "Recupera todas las posiciones visibles en el sistema."
       tags:
         - Positions
       responses:
         '200':
-          description: Posiciones recuperadas exitosamente
+          description: "Posiciones recuperadas exitosamente."
           content:
             application/json:
               schema:
@@ -217,7 +217,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Position'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -226,7 +226,7 @@ paths:
   /positions/{id}:
     get:
       summary: Obtener posición por ID
-      description: Recupera información detallada sobre una posición específica
+      description: "Recupera información detallada sobre una posición específica."
       tags:
         - Positions
       parameters:
@@ -235,28 +235,28 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID de la posición
+          description: "ID de la posición."
       responses:
         '200':
-          description: Posición recuperada exitosamente
+          description: "Posición recuperada exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Position'
         '400':
-          description: Formato de ID de posición inválido
+          description: "Formato de ID de posición inválido."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Posición no encontrada
+          description: "Posición no encontrada."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -265,8 +265,8 @@ paths:
     put:
       summary: Actualizar posición
       description: |
-        Actualiza una posición existente con nueva información. Soporta actualizaciones parciales - solo los campos proporcionados en el cuerpo de la solicitud serán actualizados.
-        Los campos no proporcionados mantendrán sus valores existentes en la base de datos.
+        Actualiza una posición existente con nueva información. Soporta actualizaciones parciales: solo los campos proporcionados en el cuerpo de la solicitud serán actualizados.
+        Los campos no proporcionados mantendrán sus valores existentes.
       tags:
         - Positions
       parameters:
@@ -275,7 +275,7 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID de la posición
+          description: "ID de la posición."
       requestBody:
         required: true
         content:
@@ -284,25 +284,25 @@ paths:
               $ref: '#/components/schemas/UpdatePositionRequest'
       responses:
         '200':
-          description: Posición actualizada exitosamente
+          description: "Posición actualizada exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdatePositionResponse'
         '400':
-          description: Error de validación o datos de referencia inválidos
+          description: "Error de validación o datos de referencia inválidos."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Posición no encontrada
+          description: "Posición no encontrada."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -311,7 +311,7 @@ paths:
   /positions/{id}/candidates:
     get:
       summary: Obtener candidatos por posición
-      description: Recupera todos los candidatos que han aplicado a una posición específica con su progreso de entrevista
+      description: "Recupera todos los candidatos que han aplicado a una posición específica, junto con su progreso en la entrevista."
       tags:
         - Positions
       parameters:
@@ -320,10 +320,10 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID de la posición
+          description: "ID de la posición."
       responses:
         '200':
-          description: Candidatos recuperados exitosamente para la posición
+          description: "Candidatos recuperados exitosamente para la posición."
           content:
             application/json:
               schema:
@@ -331,7 +331,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/PositionCandidate'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -340,7 +340,7 @@ paths:
   /positions/{id}/candidates/names:
     get:
       summary: Obtener nombres de candidatos por posición
-      description: Recupera información simplificada de candidatos (solo ID y nombre) para una posición específica
+      description: "Recupera una lista simplificada de candidatos (solo ID y nombre) para una posición específica."
       tags:
         - Positions
       parameters:
@@ -349,10 +349,10 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID de la posición
+          description: "ID de la posición."
       responses:
         '200':
-          description: Nombres de candidatos recuperados exitosamente
+          description: "Nombres de candidatos recuperados exitosamente."
           content:
             application/json:
               schema:
@@ -360,7 +360,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/CandidateName'
         '500':
-          description: Error interno del servidor
+          description: "Error interno del servidor."
           content:
             application/json:
               schema:
@@ -369,7 +369,7 @@ paths:
   /positions/{id}/interviewflow:
     get:
       summary: Obtener flujo de entrevista por posición
-      description: Recupera la configuración del flujo de entrevista para una posición específica
+      description: "Recupera la configuración del flujo de entrevista para una posición específica."
       tags:
         - Positions
       parameters:
@@ -378,22 +378,22 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID de la posición
+          description: "ID de la posición."
       responses:
         '200':
-          description: Flujo de entrevista recuperado exitosamente
+          description: "Flujo de entrevista recuperado exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/InterviewFlowResponse'
         '404':
-          description: Posición no encontrada
+          description: "Posición no encontrada."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error del servidor
+          description: "Error del servidor."
           content:
             application/json:
               schema:
@@ -402,7 +402,7 @@ paths:
   /upload:
     post:
       summary: Subir archivo
-      description: Sube un archivo (PDF o DOCX) para almacenamiento de currículum o documento
+      description: "Sube un archivo (PDF o DOCX) para adjuntarlo a un candidato como currículum."
       tags:
         - File Upload
       requestBody:
@@ -415,30 +415,35 @@ paths:
                 file:
                   type: string
                   format: binary
-                  description: Archivo para subir (PDF o DOCX, máximo 10MB)
+                  description: "Archivo para subir (PDF o DOCX, máximo 10MB)."
               required:
                 - file
       responses:
         '200':
-          description: Archivo subido exitosamente
+          description: "Archivo subido exitosamente."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FileUploadResponse'
         '400':
-          description: Tipo de archivo inválido o archivo demasiado grande
+          description: "Tipo de archivo inválido o archivo demasiado grande."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error de carga
+          description: "Error de carga."
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     CandidateListResponse:
       type: object
@@ -458,25 +463,25 @@ components:
       properties:
         id:
           type: integer
-          description: Identificador único del candidato
+          description: "Identificador único del candidato."
         firstName:
           type: string
-          description: Nombre del candidato
+          description: "Nombre del candidato."
         lastName:
           type: string
-          description: Apellido del candidato
+          description: "Apellido del candidato."
         email:
           type: string
           format: email
-          description: Dirección de correo electrónico del candidato
+          description: "Dirección de correo electrónico del candidato."
         phone:
           type: string
           nullable: true
-          description: Número de teléfono del candidato
+          description: "Número de teléfono del candidato."
         address:
           type: string
           nullable: true
-          description: Dirección del candidato
+          description: "Dirección del candidato."
         educations:
           type: array
           items:
@@ -527,22 +532,22 @@ components:
       properties:
         firstName:
           type: string
-          description: Nombre del candidato
+          description: "Nombre del candidato."
         lastName:
           type: string
-          description: Apellido del candidato
+          description: "Apellido del candidato."
         email:
           type: string
           format: email
-          description: Dirección de correo electrónico del candidato
+          description: "Dirección de correo electrónico del candidato."
         phone:
           type: string
           nullable: true
-          description: Número de teléfono del candidato
+          description: "Número de teléfono del candidato."
         address:
           type: string
           nullable: true
-          description: Dirección del candidato
+          description: "Dirección del candidato."
         educations:
           type: array
           items:
@@ -563,7 +568,7 @@ components:
       properties:
         id:
           type: integer
-          description: ID del candidato creado
+          description: "ID del candidato creado."
         firstName:
           type: string
         lastName:
@@ -586,11 +591,11 @@ components:
       type: object
       properties:
         applicationId:
-          type: string
-          description: ID de la aplicación (será convertido a entero)
+          type: integer
+          description: "ID de la aplicación a actualizar."
         currentInterviewStep:
-          type: string
-          description: Paso de entrevista actual (será convertido a entero)
+          type: integer
+          description: "ID del nuevo paso de entrevista."
       required:
         - applicationId
         - currentInterviewStep
@@ -600,7 +605,7 @@ components:
       properties:
         message:
           type: string
-          example: "Etapa del candidato actualizada exitosamente"
+          example: "Etapa del candidato actualizada exitosamente."
         data:
           $ref: '#/components/schemas/Application'
 
@@ -609,70 +614,70 @@ components:
       properties:
         id:
           type: integer
-          description: Identificador único de la posición
+          description: "Identificador único de la posición."
         companyId:
           type: integer
-          description: ID de la empresa asociada
+          description: "ID de la empresa asociada."
         interviewFlowId:
           type: integer
-          description: ID del flujo de entrevista asociado
+          description: "ID del flujo de entrevista asociado."
         title:
           type: string
-          description: Título de la posición
+          description: "Título de la posición."
         description:
           type: string
-          description: Descripción de la posición
+          description: "Descripción de la posición."
         status:
           type: string
-          description: Estado de la posición
+          description: "Estado de la posición."
           default: "Draft"
         isVisible:
           type: boolean
-          description: Si la posición es visible para los candidatos
+          description: "Indica si la posición es visible para los candidatos."
           default: false
         location:
           type: string
-          description: Ubicación de la posición
+          description: "Ubicación de la posición."
         jobDescription:
           type: string
-          description: Descripción detallada del trabajo
+          description: "Descripción detallada del trabajo."
         requirements:
           type: string
           nullable: true
-          description: Requisitos de la posición
+          description: "Requisitos de la posición."
         responsibilities:
           type: string
           nullable: true
-          description: Responsabilidades de la posición
+          description: "Responsabilidades de la posición."
         salaryMin:
           type: number
           nullable: true
-          description: Salario mínimo
+          description: "Salario mínimo."
         salaryMax:
           type: number
           nullable: true
-          description: Salario máximo
+          description: "Salario máximo."
         employmentType:
           type: string
           nullable: true
-          description: Tipo de empleo
+          description: "Tipo de empleo."
         benefits:
           type: string
           nullable: true
-          description: Beneficios de la posición
+          description: "Beneficios de la posición."
         companyDescription:
           type: string
           nullable: true
-          description: Descripción de la empresa
+          description: "Descripción de la empresa."
         applicationDeadline:
           type: string
           format: date-time
           nullable: true
-          description: Fecha límite de aplicación
+          description: "Fecha límite de aplicación."
         contactInfo:
           type: string
           nullable: true
-          description: Información de contacto
+          description: "Información de contacto."
       required:
         - companyId
         - interviewFlowId
@@ -687,81 +692,81 @@ components:
         companyId:
           type: integer
           minimum: 1
-          description: ID de la empresa asociada (debe ser un entero positivo)
+          description: "ID de la empresa asociada (entero positivo)."
         interviewFlowId:
           type: integer
           minimum: 1
-          description: ID del flujo de entrevista asociado (debe ser un entero positivo)
+          description: "ID del flujo de entrevista asociado (entero positivo)."
         title:
           type: string
           maxLength: 100
           minLength: 1
-          description: Título de la posición (requerido, 1-100 caracteres)
+          description: "Título de la posición (requerido, 1-100 caracteres)."
         description:
           type: string
           minLength: 1
-          description: Descripción de la posición (requerido, no puede estar vacío)
+          description: "Descripción de la posición (requerido)."
         status:
           type: string
           enum: [Open, Contratado, Cerrado, Borrador]
-          description: Estado de la posición (debe ser uno de los valores de estado válidos)
+          description: "Estado de la posición (debe ser uno de los valores válidos)."
         isVisible:
           type: boolean
-          description: Si la posición es visible para los candidatos
+          description: "Indica si la posición es visible para los candidatos."
         location:
           type: string
           minLength: 1
-          description: Ubicación de la posición (requerido, no puede estar vacío)
+          description: "Ubicación de la posición (requerido)."
         jobDescription:
           type: string
           minLength: 1
-          description: Descripción detallada del trabajo (requerido, no puede estar vacío)
+          description: "Descripción detallada del trabajo (requerido)."
         requirements:
           type: string
           nullable: true
-          description: Requisitos de la posición
+          description: "Requisitos de la posición."
         responsibilities:
           type: string
           nullable: true
-          description: Responsabilidades de la posición
+          description: "Responsabilidades de la posición."
         salaryMin:
           type: number
           minimum: 0
           nullable: true
-          description: Salario mínimo (debe ser >= 0, no puede ser mayor que salaryMax)
+          description: "Salario mínimo (debe ser >= 0)."
         salaryMax:
           type: number
           minimum: 0
           nullable: true
-          description: Salario máximo (debe ser >= 0, no puede ser menor que salaryMin)
+          description: "Salario máximo (debe ser >= salaryMin)."
         employmentType:
           type: string
           nullable: true
-          description: Tipo de empleo
+          description: "Tipo de empleo."
         benefits:
           type: string
           nullable: true
-          description: Beneficios de la posición
+          description: "Beneficios de la posición."
         companyDescription:
           type: string
           nullable: true
-          description: Descripción de la empresa
+          description: "Descripción de la empresa."
         applicationDeadline:
           type: string
           format: date-time
           nullable: true
-          description: Fecha límite de aplicación (debe ser una fecha futura)
+          description: "Fecha límite de aplicación (debe ser una fecha futura)."
         contactInfo:
           type: string
           nullable: true
-          description: Información de contacto
+          description: "Información de contacto."
 
     UpdatePositionResponse:
       type: object
       properties:
         message:
           type: string
-          example: "Posición actualizada exitosamente"
+          example: "Posición actualizada exitosamente."
         data:
           $ref: '#/components/schemas/Position'
 
@@ -770,19 +775,19 @@ components:
       properties:
         fullName:
           type: string
-          description: Nombre completo del candidato
+          description: "Nombre completo del candidato."
         currentInterviewStep:
           type: string
-          description: Nombre del paso de entrevista actual
+          description: "Nombre del paso de entrevista actual."
         candidateId:
           type: integer
-          description: ID del candidato
+          description: "ID del candidato."
         applicationId:
           type: integer
-          description: ID de la aplicación
+          description: "ID de la aplicación."
         averageScore:
           type: number
-          description: Puntuación promedio de entrevista
+          description: "Puntuación promedio de entrevista."
       required:
         - fullName
         - currentInterviewStep
@@ -795,10 +800,10 @@ components:
       properties:
         candidateId:
           type: integer
-          description: ID del candidato
+          description: "ID del candidato."
         fullName:
           type: string
-          description: Nombre completo del candidato
+          description: "Nombre completo del candidato."
       required:
         - candidateId
         - fullName
@@ -811,7 +816,7 @@ components:
           properties:
             positionName:
               type: string
-              description: Título de la posición
+              description: "Título de la posición."
             interviewFlow:
               $ref: '#/components/schemas/InterviewFlow'
 
@@ -820,10 +825,10 @@ components:
       properties:
         id:
           type: integer
-          description: ID del flujo de entrevista
+          description: "ID del flujo de entrevista."
         description:
           type: string
-          description: Descripción del flujo de entrevista
+          description: "Descripción del flujo de entrevista."
         interviewSteps:
           type: array
           items:
@@ -834,44 +839,44 @@ components:
       properties:
         id:
           type: integer
-          description: ID del paso de entrevista
+          description: "ID del paso de entrevista."
         interviewFlowId:
           type: integer
-          description: ID del flujo de entrevista asociado
+          description: "ID del flujo de entrevista asociado."
         interviewTypeId:
           type: integer
-          description: ID del tipo de entrevista asociado
+          description: "ID del tipo de entrevista asociado."
         name:
           type: string
-          description: Nombre del paso de entrevista
+          description: "Nombre del paso de entrevista."
         orderIndex:
           type: integer
-          description: Orden del paso en el flujo de entrevista
+          description: "Orden del paso en el flujo de entrevista."
 
     Education:
       type: object
       properties:
         id:
           type: integer
-          description: ID del registro de educación
+          description: "ID del registro de educación."
         candidateId:
           type: integer
-          description: ID del candidato asociado
+          description: "ID del candidato asociado."
         institution:
           type: string
-          description: Nombre de la institución educativa
+          description: "Nombre de la institución educativa."
         title:
           type: string
-          description: Título del grado o certificación
+          description: "Título del grado o certificación."
         startDate:
           type: string
           format: date-time
-          description: Fecha de inicio de la educación
+          description: "Fecha de inicio de la educación."
         endDate:
           type: string
           format: date-time
           nullable: true
-          description: Fecha de finalización de la educación
+          description: "Fecha de finalización de la educación."
       required:
         - institution
         - title
@@ -882,19 +887,19 @@ components:
       properties:
         institution:
           type: string
-          description: Nombre de la institución educativa
+          description: "Nombre de la institución educativa."
         title:
           type: string
-          description: Título del grado o certificación
+          description: "Título del grado o certificación."
         startDate:
           type: string
           format: date-time
-          description: Fecha de inicio de la educación
+          description: "Fecha de inicio de la educación."
         endDate:
           type: string
           format: date-time
           nullable: true
-          description: Fecha de finalización de la educación
+          description: "Fecha de finalización de la educación."
       required:
         - institution
         - title
@@ -905,29 +910,29 @@ components:
       properties:
         id:
           type: integer
-          description: ID del registro de experiencia laboral
+          description: "ID del registro de experiencia laboral."
         candidateId:
           type: integer
-          description: ID del candidato asociado
+          description: "ID del candidato asociado."
         company:
           type: string
-          description: Nombre de la empresa
+          description: "Nombre de la empresa."
         position:
           type: string
-          description: Título del puesto de trabajo
+          description: "Título del puesto de trabajo."
         description:
           type: string
           nullable: true
-          description: Descripción del trabajo
+          description: "Descripción del trabajo."
         startDate:
           type: string
           format: date-time
-          description: Fecha de inicio del empleo
+          description: "Fecha de inicio del empleo."
         endDate:
           type: string
           format: date-time
           nullable: true
-          description: Fecha de finalización del empleo
+          description: "Fecha de finalización del empleo."
       required:
         - company
         - position
@@ -938,23 +943,23 @@ components:
       properties:
         company:
           type: string
-          description: Nombre de la empresa
+          description: "Nombre de la empresa."
         position:
           type: string
-          description: Título del puesto de trabajo
+          description: "Título del puesto de trabajo."
         description:
           type: string
           nullable: true
-          description: Descripción del trabajo
+          description: "Descripción del trabajo."
         startDate:
           type: string
           format: date-time
-          description: Fecha de inicio del empleo
+          description: "Fecha de inicio del empleo."
         endDate:
           type: string
           format: date-time
           nullable: true
-          description: Fecha de finalización del empleo
+          description: "Fecha de finalización del empleo."
       required:
         - company
         - position
@@ -965,16 +970,16 @@ components:
       properties:
         id:
           type: integer
-          description: ID del registro de currículum
+          description: "ID del registro de currículum."
         candidateId:
           type: integer
-          description: ID del candidato asociado
+          description: "ID del candidato asociado."
         filePath:
           type: string
-          description: Ruta del archivo de currículum
+          description: "Ruta del archivo de currículum."
         fileType:
           type: string
-          description: Tipo MIME del archivo de currículum
+          description: "Tipo MIME del archivo de currículum."
       required:
         - filePath
         - fileType
@@ -984,10 +989,10 @@ components:
       properties:
         filePath:
           type: string
-          description: Ruta del archivo de currículum
+          description: "Ruta del archivo de currículum."
         fileType:
           type: string
-          description: Tipo MIME del archivo de currículum
+          description: "Tipo MIME del archivo de currículum."
       required:
         - filePath
         - fileType
@@ -997,24 +1002,24 @@ components:
       properties:
         id:
           type: integer
-          description: ID de la aplicación
+          description: "ID de la aplicación."
         candidateId:
           type: integer
-          description: ID del candidato asociado
+          description: "ID del candidato asociado."
         positionId:
           type: integer
-          description: ID de la posición asociada
+          description: "ID de la posición asociada."
         applicationDate:
           type: string
           format: date-time
-          description: Fecha de envío de la aplicación
+          description: "Fecha de envío de la aplicación."
         currentInterviewStep:
           type: integer
-          description: ID del paso de entrevista actual
+          description: "ID del paso de entrevista actual."
         notes:
           type: string
           nullable: true
-          description: Notas de la aplicación
+          description: "Notas de la aplicación."
 
     Interview:
       type: object
@@ -1022,31 +1027,31 @@ components:
         interviewDate:
           type: string
           format: date-time
-          description: Fecha y hora de la entrevista
+          description: "Fecha y hora de la entrevista."
         interviewStep:
           type: object
           properties:
             name:
               type: string
-              description: Nombre del paso de entrevista
+              description: "Nombre del paso de entrevista."
         notes:
           type: string
           nullable: true
-          description: Notas de la entrevista
+          description: "Notas de la entrevista."
         score:
           type: number
           nullable: true
-          description: Puntuación de la entrevista
+          description: "Puntuación de la entrevista."
 
     FileUploadResponse:
       type: object
       properties:
         filePath:
           type: string
-          description: Ruta del archivo subido
+          description: "Ruta del archivo subido."
         fileType:
           type: string
-          description: Tipo MIME del archivo subido
+          description: "Tipo MIME del archivo subido."
       required:
         - filePath
         - fileType
@@ -1056,16 +1061,16 @@ components:
       properties:
         total:
           type: integer
-          description: Número total de registros
+          description: "Número total de registros."
         page:
           type: integer
-          description: Número de página actual
+          description: "Número de página actual."
         limit:
           type: integer
-          description: Registros por página
+          description: "Registros por página."
         totalPages:
           type: integer
-          description: Número total de páginas
+          description: "Número total de páginas."
       required:
         - total
         - page
@@ -1077,17 +1082,18 @@ components:
       properties:
         message:
           type: string
-          description: Mensaje de error
+          description: "Mensaje de error."
         error:
           type: string
-          description: Información detallada del error
+          description: "Información detallada del error."
       required:
         - message
 
 tags:
   - name: Candidates
-    description: Operaciones relacionadas con la gestión de candidatos
+    description: "Operaciones relacionadas con la gestión de candidatos."
   - name: Positions
-    description: Operaciones relacionadas con la gestión de posiciones de trabajo
+    description: "Operaciones relacionadas con la gestión de posiciones de trabajo."
   - name: File Upload
-    description: Operaciones relacionadas con la carga de archivos
+    description: "Operaciones relacionadas con la carga de archivos."
+

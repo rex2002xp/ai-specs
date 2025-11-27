@@ -1,49 +1,50 @@
 ---
-description: Estándares y mejores prácticas para documentación técnica en este proyecto, incluyendo estructura de documentación, procesos de actualización y reglas de lenguaje.
-globs:
+description: Estándares y mejores prácticas para la documentación técnica en este proyecto, incluyendo estructura, procesos de actualización y reglas de lenguaje.
+globs: []
 alwaysApply: true
 ---
-# Reglas y Patrones para documentación y especificaciones de IA
+# Reglas y Patrones para Documentación y Especificaciones de IA
 
 ## Introducción
-La documentación técnica se aplica a toda la documentación relativa al proyecto, como el modelo de datos, README, especificaciones de API y otros documentos MD que describen cómo se estructura, ejecuta y opera el proyecto.
-Las especificaciones de IA se refieren a los documentos que explican a los agentes de IA cómo comportarse, documentar, planificar, codificar, etc., lo cual incluye acuerdos de equipo, estándares y convenciones.
+La **documentación técnica** se refiere a todos los documentos que describen cómo se estructura, ejecuta y opera el proyecto (ej. `data-model.md`, `README.md`, `api-spec.yml`).
 
-## Reglas generales
-- SIEMPRE ESCRIBIR EN INGLÉS, incluyendo comentarios y cualquier explicación en los archivos. Esto se aplica tanto a la creación de documentación nueva como a la actualización de la existente, y también se aplica a la documentación dentro del código (comentarios, explicaciones de funciones o campos, etc.).
+Las **especificaciones de IA** son los documentos que guían a los agentes de IA sobre cómo comportarse, planificar y codificar, incluyendo estándares y convenciones del equipo.
 
+## Reglas de Lenguaje
+De acuerdo con los estándares base, el idioma del proyecto se define así:
+- **Español para Documentación**: Toda la documentación, descripciones, comentarios en el código y discusiones se realizarán en español.
+- **Inglés para Código**: Los artefactos de código (nombres de variables, funciones, clases, etc.) deben estar en inglés para mantener la compatibilidad con el ecosistema de software.
 
+## Proceso de Actualización de la Documentación Técnica
+Antes de finalizar una tarea o realizar un `commit`, el agente de IA debe revisar si los cambios en el código requieren actualizaciones en la documentación.
 
-## Documentación Técnica
-Antes de realizar cualquier commit o git push, o si se te pide documentar un commit, debes SIEMPRE revisar qué documentación técnica debe actualizarse.
+El proceso es el siguiente:
+1.  Revisar todos los cambios recientes en el código base.
+2.  Identificar qué archivos de documentación necesitan ser actualizados. Ejemplos:
+    - Cambios en el modelo de base de datos -> Actualizar `data-model.md`.
+    - Cambios en endpoints de la API -> Actualizar `api-spec.yml`.
+    - Cambios en el proceso de instalación o arquitectura -> Actualizar `development_guide.md` y `nextjs-standards.mdc`.
+3.  Actualizar cada archivo afectado en **español**, manteniendo la consistencia con la estructura existente.
+4.  Asegurar que toda la documentación esté correctamente formateada.
+5.  Verificar que los cambios se reflejen con precisión en los documentos.
+6.  Al finalizar, reportar qué archivos fueron actualizados y un resumen de los cambios.
 
-Al actualizar la documentación, haré lo siguiente:
-1. Revisar todos los cambios recientes en el código base
-2. Identificar qué archivos de documentación necesitan actualizaciones basándose en los cambios. Algunos ejemplos claros:
-   - Para cambios en el modelo de datos: Actualizar la sección de definición del modelo de datos en data-model.md
-   - Para cambios en la API: Actualizar api-spec.yml
-   - Para cambios en librerías, migraciones de base de datos o cualquier cosa que cambie el proceso de instalación, actualizar *-standards.mdc
-3. Actualizar cada archivo de documentación afectado en inglés, manteniendo consistencia con la documentación existente
-4. Asegurar que toda la documentación esté correctamente formateada y siga la estructura establecida
-5. Verificar que todos los cambios estén reflejados con precisión en la documentación
-6. Reportar qué archivos fueron actualizados y qué cambios se realizaron
+## Proceso de Actualización de Especificaciones de IA
+Esta sección define un proceso para que el agente de IA aprenda y evolucione.
 
-## Especificaciones de IA
+El agente debe:
+*   Aprender de la retroalimentación, orientación y sugerencias del usuario.
+*   Identificar proactivamente oportunidades para mejorar las reglas de desarrollo basándose en la interacción.
+*   Sugerir cambios en estas especificaciones para mantener la asistencia alineada con las necesidades del proyecto.
 
-Esta regla establece un proceso obligatorio para que la IA:
-*   Aprenda de la retroalimentación, orientación y sugerencias del usuario durante las interacciones.
-*   Identifique oportunidades para mejorar las Reglas de Desarrollo existentes basándose en estos aprendizajes de manera proactiva.
-*   Mantenga la asistencia de la IA alineada con las necesidades cambiantes del proyecto y las expectativas del usuario.
-*   Incorpore la retroalimentación del usuario en el marco operativo de la IA para maximizar su valor.
+Este proceso se activa después de cualquier interacción donde el usuario proporcione retroalimentación (explícita o implícita). **El agente de IA debe analizar activamente todas las interacciones en busca de oportunidades de aprendizaje.**
 
-Esta regla es aplicable después de cualquier interacción donde el usuario proporcione retroalimentación explícita o implícita, sugerencias, correcciones, nueva información o exprese preferencias. **La IA DEBE analizar activamente todas las interacciones del usuario en busca de tales oportunidades de aprendizaje, no solo esperar pasivamente retroalimentación directa, para refinar proactivamente su comprensión y las mejores prácticas del proyecto.**
+### Errores Comunes y Anti-Patrones a Evitar por la IA
 
-### Errores Comunes y Anti-Patrones a evitar por la IA
-
-*   **Omitir Proceso de Aprobación:** Aplicar modificaciones de reglas sin obtener primero la revisión y aprobación explícita del usuario.
-*   **Propuestas Desvinculadas:** Proponer cambios de reglas sin conectarlos claramente con la retroalimentación específica del usuario o las ideas obtenidas de la interacción.
-*   **Modificaciones Imprecisas:** Sugerir modificaciones sin identificar precisamente qué regla o secciones específicas dentro de una regla deben cambiarse, dificultando una revisión efectiva del usuario.
-*   **Retroalimentación No Atendida:** No iniciar el proceso de aprendizaje y revisión cuando el usuario proporciona retroalimentación relevante que podría mejorar las reglas.
-*   **Expansión de Alcance:** Actualizar múltiples reglas no relacionadas simultáneamente o realizar cambios que excedan el alcance de la retroalimentación recibida.
-*   **Cambios de Reglas No Solicitados:** Modificar reglas proactivamente cuando no hay conexión directa con la retroalimentación del usuario o una oportunidad de aprendizaje. Las actualizaciones de reglas deben ser reactivas y basadas en retroalimentación.
-*   **Falta de Confirmación de Actualización:** No notificar al usuario después de que una modificación de regla ha sido implementada exitosamente después de su aprobación.
+*   **Omitir Aprobación del Usuario:** Aplicar modificaciones a las reglas sin obtener primero la revisión y aprobación explícita del usuario.
+*   **Propuestas Desconectadas:** Proponer cambios sin conectarlos claramente con la retroalimentación del usuario.
+*   **Modificaciones Imprecisas:** Sugerir cambios sin identificar la regla o sección específica a modificar.
+*   **Ignorar Retroalimentación:** No iniciar el proceso de aprendizaje cuando el usuario proporciona retroalimentación relevante.
+*   **Exceder el Alcance:** Actualizar múltiples reglas no relacionadas o realizar cambios que van más allá de la retroalimentación recibida.
+*   **Cambios No Solicitados:** Modificar reglas sin una conexión directa con una retroalimentación o una oportunidad de aprendizaje. Las actualizaciones deben ser reactivas.
+*   **Falta de Confirmación:** No notificar al usuario después de que una modificación de regla ha sido implementada exitosamente tras su aprobación.

@@ -5,28 +5,28 @@ alwaysApply: true
 
 ## 1. Principios Fundamentales
 
-- **Tareas pequeñas, una a la vez**: Siempre trabajar en pasos pequeños, uno a la vez. Nunca avanzar más de un paso.
-- **Desarrollo Dirigido por Pruebas**: Comenzar con pruebas fallidas para cualquier nueva funcionalidad (TDD), según los detalles de la tarea.
-- **Seguridad de Tipos**: Todo el código debe estar completamente tipado.
-- **Nomenclatura Clara**: Usar nombres claros y descriptivos para todas las variables y funciones.
-- **Cambios Incrementales**: Preferir cambios incrementales y enfocados sobre modificaciones grandes y complejas.
-- **Cuestionar Suposiciones**: Siempre cuestionar suposiciones e inferencias.
-- **Detección de Patrones**: Detectar y resaltar patrones de código repetidos.
+- **Tareas pequeñas, una a la vez**: Trabajar siempre en pasos pequeños e incrementales.
+- **Desarrollo Dirigido por Pruebas (TDD)**: Comenzar con pruebas fallidas para cualquier nueva funcionalidad.
+- **Seguridad de Tipos**: Todo el código TypeScript debe estar completamente tipado y en modo estricto.
+- **Nomenclatura Clara**: Usar nombres claros y descriptivos para todas las variables, funciones y componentes.
+- **Cambios Incrementales**: Preferir cambios enfocados sobre modificaciones grandes y complejas.
+- **Cuestionar Suposiciones**: No asumir la existencia de librerías o configuraciones; siempre verificar.
+- **Detección de Patrones**: Identificar y abstraer patrones de código repetidos.
 
 ## 2. Estándares de Lenguaje
-- **Solo Inglés**: Todos los artefactos técnicos deben usar siempre inglés, incluyendo:
-    - Código (variables, funciones, clases, comentarios, mensajes de error, mensajes de log)
-    - Documentación (README, guías, documentación de API)
-    - Tickets de Jira (títulos, descripciones, comentarios)
-    - Esquemas de datos y nombres de base de datos
-    - Archivos de configuración y scripts
-    - Mensajes de commit de Git
-    - Nombres y descripciones de pruebas
 
-## 3. Estándares específicos
+- **Idioma Principal: Español**: Por decisión del usuario, el idioma principal para la documentación, comentarios y discusiones es el Español.
+- **Idioma en el Código**: Para mantener la compatibilidad con el ecosistema de JavaScript/TypeScript y las librerías externas, los artefactos de código deben usar **Inglés**. Esto incluye:
+    - Nombres de variables, funciones, clases y componentes.
+    - Nombres de archivos y carpetas (`kebab-case` o `PascalCase` según corresponda).
+    - Mensajes de commit de Git.
+- **Excepción**: Los textos visibles para el usuario final en la UI deben estar en Español.
 
-Para estándares y directrices detalladas específicas de diferentes áreas del proyecto, consultar:
+## 3. Estándares Específicos
 
-- [Estándares de Backend](./backend-standards.mdc) - Desarrollo de API, patrones de base de datos, pruebas, seguridad y mejores prácticas de backend
-- [Estándares de Frontend](./frontend-standards.mdc) - Componentes de React, directrices de UI/UX y arquitectura de frontend
-- [Estándares de Documentación](./documentation-standards.mdc) - Estructura de documentación técnica, formateo y directrices de mantenimiento, incluyendo estándares de IA como este documento
+Para estándares y directrices detalladas, consultar los siguientes documentos:
+
+- **[Estándares de Next.js](./nextjs-standards.mdc)**: Arquitectura de la aplicación, comunicación API, patrones de componentes, obtención de datos, testing y mejores prácticas para Next.js.
+- **[Estándares de Documentación](./documentation-standards.mdc)**: Estructura, formato y directrices para mantener la documentación técnica y las especificaciones de IA.
+- **[Modelo de Datos](./data-model.md)**: Descripción de las entidades de la base de datos, relaciones y reglas.
+- **[Especificación de API](./api-spec.yml)**: Contrato de la API REST interna del proyecto.

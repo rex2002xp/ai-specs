@@ -1,14 +1,14 @@
-# Guía de Desarrollo
+# Guía de Desarrollo (Arquitectura Unificada con Next.js)
 
-Esta guía proporciona instrucciones paso a paso para configurar el entorno de desarrollo y ejecutar pruebas para el sistema LTI ATS.
+Esta guía proporciona instrucciones paso a paso para configurar el entorno de desarrollo y ejecutar la aplicación y las pruebas para el sistema LTI ATS.
 
 ## 🚀 Instrucciones de Configuración
 
 ### Prerrequisitos
 
 Asegúrate de tener instalado lo siguiente:
-- **Node.js** (v16 o superior)
-- **npm** (v8 o superior)
+- **Node.js** (v18 o superior)
+- **npm** (v9 o superior) o **pnpm/yarn**
 - **Docker** y **Docker Compose**
 - **Git**
 
@@ -19,134 +19,84 @@ git clone git@github.com:LIDR-academy/AI4Devs-LTI-extended.git
 cd AI4Devs-LTI-extended
 ```
 
-### 2. Configuración del Entorno
+### 2. Configuración de la Base de Datos con Docker
 
-Crear archivos de entorno tanto para backend como para frontend:
-
-**Entorno del Backend** (`backend/.env`):
-```env
-# Configuración de Base de Datos
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=LTIdbUser
-DB_PASSWORD=D1ymf8wyQEGthFR1E9xhCq
-DB_NAME=LTIdb
-
-# Configuración de la Aplicación
-PORT=3000
-NODE_ENV=development
-
-# URL de Base de Datos Prisma
-DATABASE_URL="postgresql://LTIdbUser:D1ymf8wyQEGthFR1E9xhCq@localhost:5432/LTIdb"
-```
-
-**Entorno del Frontend** (`frontend/.env`):
-```env
-REACT_APP_API_URL=http://localhost:3000
-```
-
-### 3. Configuración de Base de Datos (PostgreSQL con Docker)
-
-Iniciar la base de datos PostgreSQL usando Docker Compose:
+La base de datos PostgreSQL se gestiona con Docker para simplificar la configuración.
 
 ```bash
-# Iniciar contenedor de PostgreSQL
+# Iniciar el contenedor de la base de datos en segundo plano
 docker-compose up -d
 
-# Verificar que la base de datos esté corriendo
-docker-compose ps
+# Verificar que el contenedor esté corriendo
+docker ps
 ```
 
-La base de datos PostgreSQL estará disponible en:
-- **Host**: `localhost`
-- **Puerto**: `5432`
-- **Base de datos**: `LTIdb`
-- **Usuario**: `LTIdbUser`
-- **Contraseña**: `D1ymf8wyQEGthFR1E9xhCq`
+La base de datos estará disponible localmente con las credenciales definidas en el archivo `docker-compose.yml`.
 
-### 4. Configuración del Backend
+### 3. Configuración del Entorno
+
+Crea un archivo de entorno en la raíz del proyecto. Este único archivo contendrá todas las variables necesarias.
+
+**Crear el archivo:**
+```bash
+touch .env.local
+```
+
+**Añadir el siguiente contenido a `.env.local`:**
+
+```env
+# URL de Conexión a la Base de Datos para Prisma
+# Asegúrate de que las credenciales coincidan con las de tu docker-compose.yml
+DATABASE_URL="postgresql://LTIdbUser:D1ymf8wyQEGthFR1E9xhCq@localhost:5432/LTIdb"
+
+# URL pública de la aplicación (usada por NextAuth, etc.)
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+# Otras variables de entorno (ej. para autenticación)
+# NEXTAUTH_URL="http://localhost:3000"
+# NEXTAUTH_SECRET="tu_secreto_aqui"
+```
+
+### 4. Instalación y Ejecución de la Aplicación
+
+Con la base de datos corriendo y el entorno configurado, instala las dependencias y ejecuta la aplicación.
 
 ```bash
-# Navegar al directorio del backend
-cd backend
-
-# Instalar dependencias
+# 1. Instalar dependencias del proyecto
 npm install
 
-# Generar cliente de Prisma
-npm run prisma:generate
-
-# Ejecutar migraciones de base de datos
+# 2. Aplicar las migraciones de la base de datos para crear las tablas
 npx prisma migrate deploy
 
-# (Opcional) Poblar la base de datos con datos de ejemplo
+# 3. (Opcional) Poblar la base de datos con datos de prueba
 npx prisma db seed
 
-# Iniciar el servidor de desarrollo
+# 4. Iniciar el servidor de desarrollo
 npm run dev
 ```
 
-La API del backend estará disponible en `http://localhost:3000`
-
-### 5. Configuración del Frontend
-
-```bash
-# Navegar al directorio del frontend (desde la raíz del proyecto)
-cd frontend
-
-# Instalar dependencias
-npm install
-
-# Iniciar el servidor de desarrollo
-npm start
-```
-
-La aplicación frontend estará disponible en `http://localhost:3001`
-
-### 6. Configuración de Suite de Pruebas Cypress
-
-```bash
-# Desde el directorio frontend
-cd frontend
-
-# Instalar Cypress (si no está instalado)
-npm install
-
-# Abrir Cypress Test Runner (Interactivo)
-npm run cypress:open
-
-# O ejecutar pruebas en modo headless
-npm run cypress:run
-```
+La aplicación Next.js estará disponible en `http://localhost:3000`. Incluirá tanto el frontend como las rutas de API.
 
 ## 🧪 Pruebas
 
-### Pruebas de Backend
+Las pruebas se han unificado en un solo conjunto de comandos en la raíz del proyecto.
+
+### Pruebas Unitarias y de Integración (Jest)
 
 ```bash
-cd backend
-
-# Ejecutar todas las pruebas
+# Ejecutar todas las pruebas una vez
 npm test
 
-# Ejecutar pruebas en modo watch
+# Ejecutar pruebas en modo "watch" para desarrollo
 npm run test:watch
-
-# Ejecutar pruebas con cobertura
-npm run test:coverage
 ```
 
-### Pruebas de Frontend
+### Pruebas End-to-End (Cypress)
 
 ```bash
-cd frontend
-
-# Ejecutar pruebas unitarias
-npm test
-
-# Ejecutar pruebas E2E con Cypress
-npm run cypress:run
-
-# Abrir Cypress Test Runner
+# Abrir el lanzador de pruebas de Cypress en modo interactivo
 npm run cypress:open
+
+# Ejecutar todas las pruebas E2E en modo "headless" (sin UI)
+npm run cypress:run
 ```
