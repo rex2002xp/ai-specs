@@ -29,5 +29,19 @@ Para estándares y directrices detalladas, consultar los siguientes documentos:
 - **[Estándares de Next.js](./nextjs-standards.mdc)**: Arquitectura de la aplicación, comunicación API, patrones de componentes, obtención de datos, testing y mejores prácticas para Next.js 16+.
 - **[Integración MCP](./mcp-integration.mdc)**: Guía completa para configurar y usar MCP (Model Context Protocol) con agentes de IA en Next.js 16+.
 - **[Estándares de Documentación](./documentation-standards.mdc)**: Estructura, formato y directrices para mantener la documentación técnica y las especificaciones de IA.
-- **[Modelo de Datos](./data-model.md)**: Descripción de las entidades de la base de datos, relaciones y reglas.
-- **[Especificación de API](./api-spec.yml)**: Contrato de la API REST interna del proyecto.
+
+## 4. Plantillas de Documentación del Proyecto
+
+Las siguientes plantillas deben ser personalizadas para cada proyecto específico:
+
+- **[Plantilla de Modelo de Datos](./data-model.template.md)**: Plantilla para documentar las entidades de la base de datos, relaciones y reglas de negocio.
+- **[Plantilla de Especificación de API](./api-spec.template.yml)**: Plantilla OpenAPI 3.0 para documentar el contrato de la API REST del proyecto.
+- **[Guía de Desarrollo](./development_guide.md)**: Plantilla de guía para configurar el entorno de desarrollo y ejecutar el proyecto.
+
+**Nota**: Estas plantillas contienen placeholders que deben reemplazarse con la información específica de tu proyecto.
+
+## 5. Ejemplos de Referencia
+
+Para ver ejemplos completos de cómo usar estas especificaciones en un proyecto real:
+
+- **[Ejemplo: Sistema LTI ATS](../examples/lti-ats/)**: Ejemplo completo de un sistema de seguimiento de candidatos construido con estas especificaciones.

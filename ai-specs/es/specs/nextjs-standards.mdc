@@ -1,5 +1,5 @@
 ---
-description: Estándares de desarrollo, mejores prácticas y convenciones para la aplicación LTI con Next.js, incluyendo arquitectura, patrones de componentes, rutas de API y testing.
+description: Estándares de desarrollo, mejores prácticas y convenciones para aplicaciones Next.js, incluyendo arquitectura, patrones de componentes, rutas de API y testing.
 globs: ["src/**/*.{js,jsx,ts,tsx}", "prisma/**/*.prisma", "cypress/**/*.{ts,js}", "tsconfig.json", "package.json"]
 alwaysApply: true
 ---
@@ -39,7 +39,7 @@ alwaysApply: true
 
 ## Visión General
 
-Este documento describe las mejores prácticas y estándares para la aplicación LTI, construida sobre una arquitectura unificada con **Next.js**. El objetivo es asegurar la consistencia, mantenibilidad y escalabilidad del código.
+Este documento describe las mejores prácticas y estándares para aplicaciones construidas con **Next.js**, basadas en una arquitectura unificada. El objetivo es asegurar la consistencia, mantenibilidad y escalabilidad del código en cualquier proyecto Next.js.
 
 ## Stack Tecnológico
 
@@ -128,24 +128,24 @@ mi-proyecto/
 ├── src/
 │   ├── app/
 │   │   ├── (pages)/
-│   │   │   ├── candidates/
-│   │   │   │   └── page.tsx   # -> /candidates
+│   │   │   ├── [recurso]/
+│   │   │   │   └── page.tsx   # -> /[recurso]
 │   │   │   └── layout.tsx
 │   │   ├── api/
-│   │   │   ├── candidates/
-│   │   │   │   └── route.ts   # -> /api/candidates
+│   │   │   ├── [recurso]/
+│   │   │   │   └── route.ts   # -> /api/[recurso]
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components/
 │   │   ├── ui/                # Componentes genéricos (Button, Card, etc.)
-│   │   └── domain/            # Componentes de negocio (CandidateForm, etc.)
+│   │   └── domain/            # Componentes de negocio específicos del proyecto
 │   ├── lib/
 │   │   ├── prisma.ts
 │   │   └── utils.ts
 │   ├── services/              # Lógica de negocio
-│   │   └── candidate-service.ts
+│   │   └── [recurso]-service.ts
 │   ├── repositories/          # Lógica de acceso a datos
-│   │   └── candidate-repository.ts
+│   │   └── [recurso]-repository.ts
 │   └── styles/
 │       └── globals.css
 ├── .env.local
@@ -169,8 +169,8 @@ El **Principio de Responsabilidad Única (SRP)** dicta que cada módulo o clase 
 `Route (Controller) -> Service -> Repository -> Prisma`
 
 ```typescript
-// src/app/api/candidates/route.ts (Capa de Ruta)
-import { createCandidate } from '@/services/candidate-service';
+// src/app/api/[recurso]/route.ts (Capa de Ruta)
+import { createResource } from '@/services/resource-service';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -178,8 +178,8 @@ export async function POST(request: Request) {
     const data = await request.json();
     // 1. Validación de datos (ej. con Zod)
     // 2. Llamada al servicio
-    const newCandidate = await createCandidate(data);
-    return NextResponse.json(newCandidate, { status: 201 });
+    const newResource = await createResource(data);
+    return NextResponse.json(newResource, { status: 201 });
   } catch (error) {
     // ... manejo de errores
   }
@@ -191,16 +191,16 @@ export async function POST(request: Request) {
 Centraliza el acceso a datos para un modelo de Prisma, haciendo el código más limpio y fácil de mantener.
 
 ```typescript
-// src/repositories/candidate-repository.ts (Capa de Repositorio)
+// src/repositories/resource-repository.ts (Capa de Repositorio)
 import prisma from '@/lib/prisma';
 
-export const candidateRepository = {
+export const resourceRepository = {
   async findById(id: number) {
-    return prisma.candidate.findUnique({ where: { id } });
+    return prisma.resource.findUnique({ where: { id } });
   },
 
-  async create(data: { email: string; firstName: string; lastName: string }) {
-    return prisma.candidate.create({ data });
+  async create(data: ResourceCreateInput) {
+    return prisma.resource.create({ data });
   },
 };
 ```
@@ -210,36 +210,36 @@ export const candidateRepository = {
 Los servicios no deben depender de implementaciones concretas (como `prisma`), sino de abstracciones. Esto facilita las pruebas unitarias.
 
 ```typescript
-// src/services/candidate-service.ts (Capa de Servicio)
-import { candidateRepository } from '@/repositories/candidate-repository';
+// src/services/resource-service.ts (Capa de Servicio)
+import { resourceRepository } from '@/repositories/resource-repository';
 
 // El servicio depende del repositorio, no directamente de Prisma.
-export async function createCandidate(data: { email: string; firstName: string; lastName: string }) {
-  const existing = await candidateRepository.findByEmail(data.email);
+export async function createResource(data: ResourceCreateInput) {
+  const existing = await resourceRepository.findByUniqueField(data.uniqueField);
   if (existing) {
-    throw new Error('El email ya existe');
+    throw new Error('El recurso ya existe');
   }
-  // Lógica adicional (ej. enviar un email)
-  return candidateRepository.create(data);
+  // Lógica adicional (ej. enviar notificación, validaciones complejas)
+  return resourceRepository.create(data);
 }
 ```
 
 Esto permite testear el servicio con un "mock" del repositorio, sin necesidad de una base de datos real:
 
 ```typescript
-// candidate-service.test.ts
-jest.mock('@/repositories/candidate-repository'); // Mock del repositorio
+// resource-service.test.ts
+jest.mock('@/repositories/resource-repository'); // Mock del repositorio
 
-it('should create a candidate', async () => {
+it('should create a resource', async () => {
   // Arrange: Configuramos el mock para que devuelva lo que queremos
-  (candidateRepository.create as jest.Mock).mockResolvedValue(mockCandidate);
+  (resourceRepository.create as jest.Mock).mockResolvedValue(mockResource);
 
   // Act
-  const result = await createCandidate(candidateData);
+  const result = await createResource(resourceData);
 
   // Assert
-  expect(candidateRepository.create).toHaveBeenCalledWith(candidateData);
-  expect(result).toEqual(mockCandidate);
+  expect(resourceRepository.create).toHaveBeenCalledWith(resourceData);
+  expect(result).toEqual(mockResource);
 });
 ```
 
@@ -258,10 +258,10 @@ Evita la duplicación de código a través de abstracciones.
 
 ### Convenciones de Nomenclatura
 
-- **Archivos y Carpetas**: `kebab-case` (ej: `candidate-form/`).
-- **Componentes React**: `PascalCase` (ej: `CandidateCard.tsx`).
-- **Variables y Funciones**: `camelCase` (ej: `fetchCandidates`).
-- **Tipos e Interfaces**: `PascalCase` (ej: `CandidateData`).
+- **Archivos y Carpetas**: `kebab-case` (ej: `user-form/`, `product-card/`).
+- **Componentes React**: `PascalCase` (ej: `UserCard.tsx`, `ProductList.tsx`).
+- **Variables y Funciones**: `camelCase` (ej: `fetchUsers`, `calculateTotal`).
+- **Tipos e Interfaces**: `PascalCase` (ej: `UserData`, `ProductInfo`).
 
 ### Componentes de React
 
@@ -274,27 +274,27 @@ Evita la duplicación de código a través de abstracciones.
 - **En Server Components**: Usar `fetch` o llamar directamente a funciones que acceden a la base de datos (a través de Prisma). Next.js gestiona el cacheo de datos.
 
   ```typescript
-  // app/candidates/page.tsx
-  import { getCandidates } from '@/lib/data'; // Función que usa Prisma
+  // app/[recurso]/page.tsx
+  import { getResources } from '@/lib/data'; // Función que usa Prisma
 
-  export default async function CandidatesPage() {
-    const candidates = await getCandidates();
+  export default async function ResourcePage() {
+    const resources = await getResources();
     return (
-      // JSX para mostrar los candidatos
+      // JSX para mostrar los recursos
     );
   }
   ```
 - **En Client Components**: Usar librerías como **SWR** o **React Query** para obtener datos, lo que proporciona cacheo, revalidación y manejo de estado de carga/error.
 
   ```typescript
-  // components/domain/candidate-list.tsx
+  // components/domain/resource-list.tsx
   "use client";
   import useSWR from 'swr';
 
   const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-  export function CandidateList() {
-    const { data, error, isLoading } = useSWR('/api/candidates', fetcher);
+  export function ResourceList() {
+    const { data, error, isLoading } = useSWR('/api/recursos', fetcher);
 
     if (isLoading) return <div>Cargando...</div>;
     // ...
@@ -345,7 +345,7 @@ Las rutas de API en `src/app/api/` manejan las peticiones HTTP y aplican la arqu
 
 ### Testing End-to-End (E2E)
 - **Cypress** o **Playwright**.
-- Testear flujos de usuario completos, como "crear un nuevo candidato", "actualizar una posición", etc.
+- Testear flujos de usuario completos, como "crear un nuevo recurso", "actualizar datos", "proceso de checkout", etc.
 - Usar atributos `data-testid` en los elementos HTML para seleccionarlos de forma robusta en los tests.
 
 ## Variables de Entorno
