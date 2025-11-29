@@ -58,6 +58,32 @@ Estándares para mantener documentación:
 
 ---
 
+### 🚀 Arquitecturas Avanzadas (Opcionales)
+
+#### **`advanced-architecture.mdc`**
+Patrones arquitectónicos avanzados para proyectos complejos:
+- **Domain-Driven Design (DDD)**: Entities, Value Objects, Aggregates, Repositories, Domain Events
+- **Event-Driven Architecture (EDA)**: Event Bus, Domain Events, Event Handlers, Event Store
+- **Arquitectura Modular**: Feature Modules organizados por dominio de negocio
+- **Feature Management**: Feature Folders vs Feature Flags, cuándo usar cada uno
+- **Implementación práctica**: Código completo en Next.js
+- **Trade-offs**: Cuándo aplicar y cuándo NO aplicar estos patrones
+
+**Cuándo usar**:
+- ✅ Proyectos medianos a grandes (>10 páginas, >5 entidades)
+- ✅ Múltiples desarrolladores trabajando en paralelo
+- ✅ Lógica de negocio compleja
+- ✅ Necesidad de módulos activables/desactivables
+- ✅ Planes de escalar a microservicios
+
+**Cuándo NO usar**:
+- ❌ MVPs o prototipos rápidos
+- ❌ Proyectos pequeños (<5 páginas)
+- ❌ Equipo sin experiencia en DDD/Events
+- ❌ Deadline muy ajustado
+
+---
+
 ### 📝 Plantillas (Para Personalizar en Cada Proyecto)
 
 #### **`data-model.template.md`**
