@@ -7,10 +7,11 @@ Esta guía proporciona instrucciones paso a paso para configurar el entorno de d
 ### Prerrequisitos
 
 Asegúrate de tener instalado lo siguiente:
-- **Node.js** (v18 o superior)
+- **Node.js** (v18 o superior, recomendado v20+)
 - **npm** (v9 o superior) o **pnpm/yarn**
 - **Docker** y **Docker Compose**
 - **Git**
+- **Next.js 16+** para soporte de MCP (Model Context Protocol)
 
 ### 1. Clonar el Repositorio
 
@@ -76,6 +77,28 @@ npm run dev
 ```
 
 La aplicación Next.js estará disponible en `http://localhost:3000`. Incluirá tanto el frontend como las rutas de API.
+
+### 5. (Opcional) Configurar MCP para Desarrollo Asistido por IA
+
+Si deseas utilizar agentes de IA con acceso en tiempo real a tu aplicación Next.js, configura MCP:
+
+```bash
+# Crear archivo de configuración MCP en la raíz
+cat > .mcp.json << 'EOF'
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    }
+  }
+}
+EOF
+```
+
+Con el servidor de desarrollo corriendo, los agentes de IA podrán acceder a errores, logs, metadata de páginas y más.
+
+**Nota**: Para más información sobre MCP, consulta [mcp-integration.mdc](./mcp-integration.mdc).
 
 ## 🧪 Pruebas
 

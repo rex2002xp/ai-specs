@@ -26,7 +26,8 @@ alwaysApply: true
 
 Para estándares y directrices detalladas, consultar los siguientes documentos:
 
-- **[Estándares de Next.js](./nextjs-standards.mdc)**: Arquitectura de la aplicación, comunicación API, patrones de componentes, obtención de datos, testing y mejores prácticas para Next.js.
+- **[Estándares de Next.js](./nextjs-standards.mdc)**: Arquitectura de la aplicación, comunicación API, patrones de componentes, obtención de datos, testing y mejores prácticas para Next.js 16+.
+- **[Integración MCP](./mcp-integration.mdc)**: Guía completa para configurar y usar MCP (Model Context Protocol) con agentes de IA en Next.js 16+.
 - **[Estándares de Documentación](./documentation-standards.mdc)**: Estructura, formato y directrices para mantener la documentación técnica y las especificaciones de IA.
 - **[Modelo de Datos](./data-model.md)**: Descripción de las entidades de la base de datos, relaciones y reglas.
 - **[Especificación de API](./api-spec.yml)**: Contrato de la API REST interna del proyecto.

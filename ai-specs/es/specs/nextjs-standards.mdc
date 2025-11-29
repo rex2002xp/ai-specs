@@ -10,9 +10,15 @@ alwaysApply: true
 
 - [Visión General](#visión-general)
 - [Stack Tecnológico](#stack-tecnológico)
+- [Integración con MCP (Model Context Protocol)](#integración-con-mcp-model-context-protocol)
 - [Arquitectura Unificada](#arquitectura-unificada)
   - [Regla de Comunicación Frontend-API](#regla-de-comunicación-frontend-api)
 - [Estructura del Proyecto (App Router)](#estructura-del-proyecto-app-router)
+- [Principios de Arquitectura y Diseño](#principios-de-arquitectura-y-diseño)
+  - [Arquitectura en Capas (Aplicando SRP)](#arquitectura-en-capas-aplicando-srp)
+  - [Patrón Repositorio](#patrón-repositorio)
+  - [Inversión de Dependencias (DIP) y Testing](#inversión-de-dependencias-dip-y-testing)
+  - [Principio DRY (Don't Repeat Yourself)](#principio-dry-dont-repeat-yourself)
 - [Estándares de Código](#estándares-de-código)
   - [Convenciones de Nomenclatura](#convenciones-de-nomenclatura)
   - [Componentes de React](#componentes-de-react)
@@ -37,18 +43,65 @@ Este documento describe las mejores prácticas y estándares para la aplicación
 
 ## Stack Tecnológico
 
-- **Framework Principal**: **Next.js 14+** (utilizando el App Router)
+- **Framework Principal**: **Next.js 16+** (utilizando el App Router)
 - **Lenguaje**: **TypeScript** (modo estricto activado)
 - **ORM**: **Prisma** para la interacción con la base de datos **PostgreSQL**.
 - **UI y Estilos**:
     - **React 18+**
     - **Tailwind CSS** (recomendado) para utilidad de clases CSS.
-    - **Shadcn UI** o similar para componentes accesibles sin estilos.
+    - **shadcn/ui** o similar para componentes accesibles.
 - **Testing**:
     - **Jest** y **React Testing Library** para tests unitarios y de integración.
     - **Cypress** o **Playwright** para tests End-to-End.
 - **Herramientas de Desarrollo**:
     - **ESLint** y **Prettier** para formateo y calidad de código.
+- **Desarrollo Asistido por IA**:
+    - **MCP (Model Context Protocol)** para integración con agentes de IA durante el desarrollo.
+
+## Integración con MCP (Model Context Protocol)
+
+Next.js 16+ incluye soporte nativo para MCP, un estándar abierto que permite a agentes de IA y asistentes de código interactuar con tu aplicación en tiempo real durante el desarrollo.
+
+### Beneficios de MCP
+
+- **Contexto en Tiempo Real**: Los agentes de IA pueden acceder al estado actual de la aplicación, errores, rutas y componentes.
+- **Sugerencias Contextuales**: Generación de código que sigue los patrones y estructura existentes del proyecto.
+- **Diagnóstico Automático**: Detección y análisis de errores de compilación, runtime y tipos en tiempo real.
+- **Desarrollo Más Eficiente**: Los asistentes pueden entender la arquitectura precisa del App Router y hacer sugerencias informadas.
+
+### Configuración de MCP
+
+1. **Requisitos**:
+   - Next.js 16 o superior
+   - Paquete `next-devtools-mcp`
+
+2. **Configuración**: Crear archivo `.mcp.json` en la raíz del proyecto:
+
+```json
+{
+  "mcpServers": {
+    "next-devtools": {
+      "command": "npx",
+      "args": ["-y", "next-devtools-mcp@latest"]
+    }
+  }
+}
+```
+
+3. **Uso**:
+   - Iniciar el servidor de desarrollo: `npm run dev`
+   - El agente de IA se conecta automáticamente vía `next-devtools-mcp`
+   - Los agentes pueden consultar errores, logs, metadata de páginas y Server Actions
+
+### Herramientas MCP Disponibles
+
+- `get_errors`: Obtener errores de compilación, runtime y tipos
+- `get_logs`: Acceder a logs del servidor de desarrollo
+- `get_page_metadata`: Consultar rutas y metadata de páginas
+- `get_project_metadata`: Obtener estructura y configuración del proyecto
+- `get_server_action_by_id`: Buscar Server Actions por ID
+
+**Nota**: Para más detalles sobre la configuración y uso de MCP, consultar el documento [mcp-integration.mdc](./mcp-integration.mdc).
 
 ## Arquitectura Unificada
 
@@ -70,31 +123,136 @@ Este proyecto adopta una arquitectura unificada donde tanto el frontend como el 
 ```
 mi-proyecto/
 ├── prisma/
-│   ├── schema.prisma        # Esquema de la base de datos
-│   └── migrations/          # Migraciones de la base de datos
+│   ├── schema.prisma
+│   └── migrations/
 ├── src/
 │   ├── app/
-│   │   ├── (pages)/         # Rutas de páginas principales
+│   │   ├── (pages)/
 │   │   │   ├── candidates/
 │   │   │   │   └── page.tsx   # -> /candidates
-│   │   │   └── layout.tsx     # Layout principal para las páginas
+│   │   │   └── layout.tsx
 │   │   ├── api/
 │   │   │   ├── candidates/
 │   │   │   │   └── route.ts   # -> /api/candidates
-│   │   ├── layout.tsx         # Layout raíz
-│   │   └── page.tsx           # Página de inicio
+│   │   ├── layout.tsx
+│   │   └── page.tsx
 │   ├── components/
-│   │   ├── ui/                # Componentes de UI genéricos (Button, Card, etc.)
-│   │   └── domain/            # Componentes específicos del dominio (CandidateForm, etc.)
+│   │   ├── ui/                # Componentes genéricos (Button, Card, etc.)
+│   │   └── domain/            # Componentes de negocio (CandidateForm, etc.)
 │   ├── lib/
-│   │   ├── prisma.ts          # Instancia singleton de PrismaClient
-│   │   └── utils.ts           # Funciones de utilidad
+│   │   ├── prisma.ts
+│   │   └── utils.ts
+│   ├── services/              # Lógica de negocio
+│   │   └── candidate-service.ts
+│   ├── repositories/          # Lógica de acceso a datos
+│   │   └── candidate-repository.ts
 │   └── styles/
-│       └── globals.css        # Estilos globales
-├── .env.local                 # Variables de entorno locales
+│       └── globals.css
+├── .env.local
 ├── package.json
 └── tsconfig.json
 ```
+
+## Principios de Arquitectura y Diseño
+
+Para asegurar un código mantenible y escalable, aplicaremos los siguientes principios de diseño.
+
+### Arquitectura en Capas (Aplicando SRP)
+
+El **Principio de Responsabilidad Única (SRP)** dicta que cada módulo o clase debe tener una única razón para cambiar. En nuestras API Routes, esto se logra separando las responsabilidades en capas:
+
+1.  **Capa de Ruta (Controlador):** El archivo `route.ts`. Su única responsabilidad es manejar la petición y respuesta HTTP. Valida la entrada y delega la acción a la capa de servicio. No contiene lógica de negocio.
+2.  **Capa de Servicio:** Contiene la lógica de negocio pura. Orquesta las operaciones llamando a uno o más repositorios. No sabe nada de HTTP.
+3.  **Capa de Repositorio:** Su única responsabilidad es comunicarse con la base de datos. Abstrae las consultas de Prisma.
+
+**Flujo:**
+`Route (Controller) -> Service -> Repository -> Prisma`
+
+```typescript
+// src/app/api/candidates/route.ts (Capa de Ruta)
+import { createCandidate } from '@/services/candidate-service';
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  try {
+    const data = await request.json();
+    // 1. Validación de datos (ej. con Zod)
+    // 2. Llamada al servicio
+    const newCandidate = await createCandidate(data);
+    return NextResponse.json(newCandidate, { status: 201 });
+  } catch (error) {
+    // ... manejo de errores
+  }
+}
+```
+
+### Patrón Repositorio
+
+Centraliza el acceso a datos para un modelo de Prisma, haciendo el código más limpio y fácil de mantener.
+
+```typescript
+// src/repositories/candidate-repository.ts (Capa de Repositorio)
+import prisma from '@/lib/prisma';
+
+export const candidateRepository = {
+  async findById(id: number) {
+    return prisma.candidate.findUnique({ where: { id } });
+  },
+
+  async create(data: { email: string; firstName: string; lastName: string }) {
+    return prisma.candidate.create({ data });
+  },
+};
+```
+
+### Inversión de Dependencias (DIP) y Testing
+
+Los servicios no deben depender de implementaciones concretas (como `prisma`), sino de abstracciones. Esto facilita las pruebas unitarias.
+
+```typescript
+// src/services/candidate-service.ts (Capa de Servicio)
+import { candidateRepository } from '@/repositories/candidate-repository';
+
+// El servicio depende del repositorio, no directamente de Prisma.
+export async function createCandidate(data: { email: string; firstName: string; lastName: string }) {
+  const existing = await candidateRepository.findByEmail(data.email);
+  if (existing) {
+    throw new Error('El email ya existe');
+  }
+  // Lógica adicional (ej. enviar un email)
+  return candidateRepository.create(data);
+}
+```
+
+Esto permite testear el servicio con un "mock" del repositorio, sin necesidad de una base de datos real:
+
+```typescript
+// candidate-service.test.ts
+jest.mock('@/repositories/candidate-repository'); // Mock del repositorio
+
+it('should create a candidate', async () => {
+  // Arrange: Configuramos el mock para que devuelva lo que queremos
+  (candidateRepository.create as jest.Mock).mockResolvedValue(mockCandidate);
+
+  // Act
+  const result = await createCandidate(candidateData);
+
+  // Assert
+  expect(candidateRepository.create).toHaveBeenCalledWith(candidateData);
+  expect(result).toEqual(mockCandidate);
+});
+```
+
+### Principio DRY (Don't Repeat Yourself)
+
+Evita la duplicación de código a través de abstracciones.
+
+-   **Frontend:**
+    -   **Hooks Personalizados:** Encapsular lógica con estado. Ej: `useForm`, `useDebounce`.
+    -   **Componentes Reutilizables:** Crear componentes genéricos en `src/components/ui/` (ej. `<Button>`, `<Card>`).
+-   **Backend:**
+    -   **Funciones de Utilidad:** Crear funciones compartidas en `src/lib/utils.ts`.
+    -   **Esquemas de Validación (Zod):** Definir esquemas de Zod que puedan ser reutilizados para creación y actualización.
 
 ## Estándares de Código
 
@@ -145,41 +303,14 @@ mi-proyecto/
 
 ## Rutas de API (Backend en Next.js)
 
-Las rutas de API en `src/app/api/` manejan las peticiones HTTP.
+Las rutas de API en `src/app/api/` manejan las peticiones HTTP y aplican la arquitectura en capas.
 
 ### Estructura y Lógica
 
 - **Archivos `route.ts`**: Cada ruta se define en un archivo `route.ts`.
 - **Funciones por Verbo HTTP**: Exportar funciones `async` nombradas según el verbo HTTP (`GET`, `POST`, `PUT`, `DELETE`).
-- **Validación de Datos**: Usar librerías como **Zod** para validar los cuerpos de las peticiones (`POST`, `PUT`) antes de procesarlos.
-- **Separación de Lógica**: La función de la ruta debe ser un controlador delgado. La lógica de negocio compleja debe extraerse a "servicios" o "casos de uso" en otros archivos para mantener el código limpio y testeable.
-
-```typescript
-// src/app/api/candidates/route.ts
-import { NextResponse } from 'next/server';
-import { createCandidate } from '@/lib/services/candidate-service';
-import { z } from 'zod';
-
-const candidateSchema = z.object({
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
-  email: z.string().email(),
-});
-
-export async function POST(request: Request) {
-  try {
-    const json = await request.json();
-    const validatedData = candidateSchema.parse(json);
-    const newCandidate = await createCandidate(validatedData);
-    return NextResponse.json(newCandidate, { status: 201 });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { status: 400 });
-    }
-    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
-  }
-}
-```
+- **Validación de Datos**: Usar librerías como **Zod** para validar la entrada de las peticiones.
+- **Separación de Lógica**: Las rutas delegan toda la lógica de negocio a la capa de servicio.
 
 ### Manejo de Errores en la API
 
@@ -210,7 +341,7 @@ export async function POST(request: Request) {
 - **Qué testear**:
     - **Componentes**: Testear que renderizan correctamente según las props y que la interacción del usuario funciona.
     - **Funciones de Utilidad**: Testear la lógica pura en `src/lib/`.
-    - **Lógica de Servicios**: La lógica de negocio extraída de las rutas de API debe ser testeada de forma aislada.
+    - **Capa de Servicio**: La lógica de negocio debe ser testeada de forma aislada, usando mocks para los repositorios.
 
 ### Testing End-to-End (E2E)
 - **Cypress** o **Playwright**.
